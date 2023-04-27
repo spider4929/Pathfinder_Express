@@ -2,12 +2,16 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const reportSchema = new Schema({
-  Source: {
+  source: {
     type: String,
     required: true
   },
-  Description: {
+  description: {
     type: String,
+    required: true
+  },
+  image: {
+    type: Buffer,
     required: true
   },
   user_id: {
