@@ -8,7 +8,7 @@ const createReport = async (req, res) => {
         return res.status(400).json({ error: "No image file was uploaded" })
     }
 
-    if (!req.file.mimetype.startswith("image/")) {
+    if (!req.file.mimetype.startsWith("image/")) {
         return res.status(400).json({ error: "Uploaded file is not a valid image" })
     }
 
