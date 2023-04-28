@@ -12,6 +12,10 @@ const createReport = async (req, res) => {
         return res.status(400).json({ error: "Uploaded file is not a valid image" })
     }
 
+    if (req.file.size > 20 * 1024 * 1024) {
+        return res.status(400).json({ error: "Uploaded file exceeds the maximum size of 20 MB" });
+    }
+
     const image = req.file.buffer
 
     try {
