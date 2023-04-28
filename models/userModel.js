@@ -20,39 +20,38 @@ const userSchema = new Schema({
 userSchema.statics.signup = async function(email, password) {
     
     // validation
+    if (!email || !password) {
+        throw Error('All fields must be filled')
+    }
     const exists = await this.findOne({ email })
 
     if (exists) {
         throw Error('Email already in use')
     }
-    if (!email || !password) {
-        throw Error('All fields must be filled')
-    }
     if (!validator.isEmail(email)) {
         throw Error('Email not valid')
     }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-    if (!validator.matches(password, passwordRegex)) {
-    const errors = [];
+    if (!validator.isStrongPassword(password)) {
+        const errors = [];
 
-    if (!validator.matches(password, /^(?=.*[a-z])/)) {
-        errors.push('Password must contain at least one lowercase letter');
-    }
+        if (!validator.matches(password, /^(?=.*[a-z])/)) {
+            errors.push('Password must contain at least one lowercase letter');
+        }
 
-    if (!validator.matches(password, /^(?=.*[A-Z])/)) {
-        errors.push('Password must contain at least one uppercase letter');
-    }
+        if (!validator.matches(password, /^(?=.*[A-Z])/)) {
+            errors.push('Password must contain at least one uppercase letter');
+        }
 
-    if (!validator.matches(password, /^(?=.*\d)/)) {
-        errors.push('Password must contain at least one number');
-    }
+        if (!validator.matches(password, /^(?=.*\d)/)) {
+            errors.push('Password must contain at least one number');
+        }
 
-    if (!validator.matches(password, /^(?=.*[@$!%*?&])/)) {
-        errors.push('Password must contain at least one special character (@$!%*?&)');
-    }
+        if (!validator.matches(password, /^(?=.*\W)/)) {
+            errors.push('Password must contain at least one special character');
+        }
 
-    throw new Error(errors.join('\n'));
+        throw new Error(errors.join('\n'));
     }
 
     const salt = await bcrypt.genSalt(10)
