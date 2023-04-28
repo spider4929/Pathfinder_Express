@@ -28,8 +28,13 @@ userSchema.statics.signup = async function(email, password) {
     if (exists) {
         throw Error('Email already in use')
     }
+
     if (!validator.isEmail(email)) {
         throw Error('Email not valid')
+    }
+
+    if (password.length < 8) {
+        throw Error('Password must at least be 8 characters long.')
     }
 
     if (!validator.isStrongPassword(password)) {
