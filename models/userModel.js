@@ -33,12 +33,12 @@ userSchema.statics.signup = async function(email, password) {
         throw Error('Email not valid')
     }
 
-    if (password.length < 8) {
-        throw Error('Password must at least be 8 characters long.')
-    }
-
     if (!validator.isStrongPassword(password)) {
         const errors = [];
+
+        if (password.length < 8) {
+            errors.push('Password must at least be 8 characters long.')
+        }
 
         if (!validator.matches(password, /^(?=.*[a-z])/)) {
             errors.push('Password must contain at least one lowercase letter');
