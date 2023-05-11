@@ -144,4 +144,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { getReport, createReport, updateReportExpiry, addExpiry, subtractExpiry }
+module.exports = { getReport, createReport, addExpiry, subtractExpiry }
