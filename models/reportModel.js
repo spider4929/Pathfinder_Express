@@ -38,6 +38,10 @@ const reportSchema = new Schema({
     default: function() {
       return new Date(Date.now() + 900000);
     }
+  },
+  counter: {
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 

@@ -68,12 +68,10 @@ const createReport = async (req, res) => {
         for (const a of reports) {
             const aCoords = a.coordinates
             const distance = haversineDistance(parsedCoordinates.latitude, parsedCoordinates.longitude, aCoords.latitude, aCoords.longitude)
-            if (distance <= thresholdDistance) {
-                if (a.user_id !== user_id) {
-                    found = true
-                    const expiry = a.expiry 
-                    await Report.findOneAndUpdate({_id: a.id}, { expiry: expiry.getTime() + (15 * 60 * 1000) })
-                }   
+            if (distance <= thresholdDistance && a.user_id !== user_id) {
+                found = true;
+                const { expiry, counter } = a;
+                await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (15 * 60 * 1000), counter: counter + 1 });
             }
         }
         if (found) {
