@@ -104,6 +104,7 @@ const addExpiry = async (req, res) => {
     const newExpiry = new Date(report.expiry.getTime() + 15 * 60000)
 
     report.expiry = newExpiry
+    report.counter += 1
 
     const updatedReport = await report.save()
 
