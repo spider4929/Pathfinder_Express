@@ -13,6 +13,9 @@ const reportSchema = new Schema({
     },
     required: true
   },
+  edges: {
+    type: String
+  },
   category: {
     type: String,
     required: true

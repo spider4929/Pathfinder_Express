@@ -44,7 +44,7 @@ const getReport = async (req, res) => {
 
 // create new report
 const createReport = async (req, res) => {
-    const { source, coordinates, category, description } = req.body;
+    const { source, coordinates, edges, category, description } = req.body;
     console.log(coordinates)
     if (!req.file) {
         return res.status(400).json({ error: "No image file was uploaded" })
@@ -75,10 +75,10 @@ const createReport = async (req, res) => {
             }
         }
         if (found) {
-            const tempReport = { source, coordinates: parsedCoordinates, category, description, image, user_id };
+            const tempReport = { source, coordinates: parsedCoordinates, edges, category, description, image, user_id };
             return res.status(200).json(tempReport)
         }
-        const report = await Report.create({ source, coordinates: parsedCoordinates, category, description, image, user_id });
+        const report = await Report.create({ source, coordinates: parsedCoordinates, edges, category, description, image, user_id });
         
         return res.status(200).json(report);
     } catch (error) {
