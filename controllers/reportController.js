@@ -42,6 +42,29 @@ const getReport = async (req, res) => {
     res.status(200).json(response)
 }
 
+// display report with image
+const getReportWithImage = async (req, res) => {
+    const { coordsData } = req.body;
+    const response = []
+    const reports = await Report.find()
+
+    for (const coordinate of coordsData) {
+        for (const a of reports) {
+            const aCoords = a.coordinates 
+            const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
+            if (distance <= thresholdDistance) {
+                const { _id, source, image, coordinates, category, expiry } = a
+                const objToAdd = { _id, source, image, coordinates, category, expiry };
+                if (!response.some((obj) => obj._id === objToAdd._id)) {
+                    response.push(objToAdd);
+                }
+            }
+        }
+    }
+
+    res.status(200).json(response)
+}
+
 // create new report
 const createReport = async (req, res) => {
     const { source, coordinates, edges, category, description } = req.body;
@@ -143,4 +166,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { getReport, createReport, addExpiry, subtractExpiry }
+module.exports = { getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
