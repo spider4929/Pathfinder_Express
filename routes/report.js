@@ -1,5 +1,6 @@
 const express = require('express')
-const { getReport, 
+const { getReport,
+    getReportWithImage, 
     createReport, 
     addExpiry,
     subtractExpiry } = require('../controllers/reportController')
@@ -19,6 +20,9 @@ router.post('/', upload.single('image'), createReport)
 
 // POST a report based on coordsData
 router.post('/filter', getReport )
+
+// POST a report with image based on coordsData
+router.post('/filterwithimage', upload.none(), getReportWithImage)
 
 // PATCH a report by adding expiry
 router.patch('/add/:id', upload.none(), addExpiry)
