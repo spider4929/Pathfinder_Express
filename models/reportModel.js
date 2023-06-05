@@ -32,6 +32,9 @@ const reportSchema = new Schema({
     type: String,
     required: true
   },
+  voter_ids: {
+    type: [String],
+  },
   approved: {
     type: Boolean,
     default: false,
@@ -39,9 +42,9 @@ const reportSchema = new Schema({
   expiry: {
     type: Date,
     default: function() {
-        return new Date(Date.now() + 86400000);
+        // return new Date(Date.now() + 86400000);
         //original code, made the expiry one day for testing purposes
-        //return new Date(Date.now() + 900000);
+        return new Date(Date.now() + 1800000);
     }
   },
   counter: {

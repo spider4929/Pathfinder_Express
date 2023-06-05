@@ -45,6 +45,7 @@ const getReport = async (req, res) => {
 // display report with image
 const getReportWithImage = async (req, res) => {
     const { coordsData } = req.body;
+    const user_id = req.user._id
     const response = []
     const reports = await Report.find()
 
@@ -52,7 +53,7 @@ const getReportWithImage = async (req, res) => {
         for (const a of reports) {
             const aCoords = a.coordinates 
             const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
-            if (distance <= thresholdDistance) {
+            if (distance <= thresholdDistance && !a.voter_ids.includes(user_id)) {
                 const { _id, source, image, coordinates, category, expiry, counter } = a
                 const objToAdd = { _id, source, image, coordinates, category, expiry, counter };
                 if (!response.some((obj) => obj._id === objToAdd._id)) {
@@ -94,7 +95,7 @@ const createReport = async (req, res) => {
             if (distance <= thresholdDistance && a.user_id !== user_id) {
                 found = true;
                 const { expiry, counter } = a;
-                await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (15 * 60 * 1000), counter: counter + 1 });
+                await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (30 * 60 * 1000), counter: counter + 1 });
             }
         }
         if (found) {
@@ -111,7 +112,8 @@ const createReport = async (req, res) => {
 
 // Add Expiry
 const addExpiry = async (req, res) => {
-    const { id } = req.params 
+    const { id } = req.params
+    const user_id = req.user._id 
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: 'No such report'})
@@ -123,10 +125,17 @@ const addExpiry = async (req, res) => {
         return res.status(404).json({error: 'No such report'})
     }
 
+    // Add user_id to voter_ids if it doesn't exist
+    if (!report.voter_ids.includes(user_id)) {
+        report.voter_ids.push(user_id);
+    }
+
     // add 15 minutes to the expiry time
-    const newExpiry = new Date(report.expiry.getTime() + 15 * 60000)
+    const newExpiry = new Date(report.expiry.getTime() + 30 * 60000)
+    
 
     report.expiry = newExpiry
+    
     report.counter += 1
 
     const updatedReport = await report.save()
@@ -135,7 +144,8 @@ const addExpiry = async (req, res) => {
 }
 
 const subtractExpiry = async (req, res) => {
-    const { id } = req.params 
+    const { id } = req.params
+    const user_id = req.user._id  
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: 'No such report'})
@@ -147,8 +157,13 @@ const subtractExpiry = async (req, res) => {
         return res.status(404).json({error: 'No such report'})
     }
 
+    // Add user_id to voter_ids if it doesn't exist
+    if (!report.voter_ids.includes(user_id)) {
+        report.voter_ids.push(user_id);
+    }
+
     // subtract 15 minutes from the expiry time
-    const newExpiry = new Date(report.expiry.getTime() - 15 * 60000)
+    const newExpiry = new Date(report.expiry.getTime() - 30 * 60000)
 
     report.expiry = newExpiry
 
