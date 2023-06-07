@@ -54,8 +54,8 @@ const getReportWithImage = async (req, res) => {
             const aCoords = a.coordinates 
             const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
             if (distance <= thresholdDistance && !a.voter_ids.includes(user_id) && a.user_id != user_id) {
-                console.log(a.user_id)
-                console.log(user_id)
+                // console.log(a.user_id)
+                // console.log(user_id)
                 const { _id, source, image, coordinates, category, expiry, counter } = a
                 const objToAdd = { _id, source, image, coordinates, category, expiry, counter };
                 if (!response.some((obj) => obj._id === objToAdd._id)) {
