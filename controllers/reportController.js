@@ -109,14 +109,20 @@ const createReport = async (req, res) => {
     const safeSearchAnnotation = safeSearchResult.safeSearchAnnotation;
 
     const explicitContentLikelihood = safeSearchAnnotation.adult;
+    const spoofContentLikelihood = safeSearchAnnotation.spoof;
     const medicalContentLikelihood = safeSearchAnnotation.medical;
+    const violenceContentLikelihood = safeSearchAnnotation.violence;
     const racyContentLikelihood = safeSearchAnnotation.racy;
 
     if (
         explicitContentLikelihood === 'LIKELY' ||
         explicitContentLikelihood === 'VERY_LIKELY' ||
+        spoofContentLikelihood === 'LIKELY' ||
+        spoofContentLikelihood == 'VERY_LIKELY' ||
         medicalContentLikelihood === 'LIKELY' ||
         medicalContentLikelihood === 'VERY_LIKELY' ||
+        violenceContentLikelihood == 'LIKELY' ||
+        violenceContentLikelihood == 'VERY_LIKELY' ||
         racyContentLikelihood === 'LIKELY' ||
         racyContentLikelihood === 'VERY_LIKELY'
     ) {
