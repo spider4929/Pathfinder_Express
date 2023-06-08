@@ -126,7 +126,7 @@ const createReport = async (req, res) => {
         racyContentLikelihood === 'LIKELY' ||
         racyContentLikelihood === 'VERY_LIKELY'
     ) {
-    return res.status(400).json({ error: "Uploaded image contains explicit, medical, or racy content" });
+    return res.status(400).json({ error: "Uploading explicit image is not allowed." });
     }
 
     let found = false;
