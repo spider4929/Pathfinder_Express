@@ -108,8 +108,19 @@ const createReport = async (req, res) => {
     const safeSearchResult = safeSearchResponse.data.responses[0];
     const safeSearchAnnotation = safeSearchResult.safeSearchAnnotation;
 
-    if (safeSearchAnnotation.adult === 'LIKELY' || safeSearchAnnotation.adult === 'VERY_LIKELY') {
-      return res.status(400).json({ error: "Uploaded image contains explicit content" });
+    const explicitContentLikelihood = safeSearchAnnotation.adult;
+    const medicalContentLikelihood = safeSearchAnnotation.medical;
+    const racyContentLikelihood = safeSearchAnnotation.racy;
+
+    if (
+        explicitContentLikelihood === 'LIKELY' ||
+        explicitContentLikelihood === 'VERY_LIKELY' ||
+        medicalContentLikelihood === 'LIKELY' ||
+        medicalContentLikelihood === 'VERY_LIKELY' ||
+        racyContentLikelihood === 'LIKELY' ||
+        racyContentLikelihood === 'VERY_LIKELY'
+    ) {
+    return res.status(400).json({ error: "Uploaded image contains explicit, medical, or racy content" });
     }
 
     let found = false;
