@@ -1,3 +1,6 @@
+require('dotenv').config()
+
+const axios = require('axios');
 const Report = require('../models/reportModel')
 const mongoose = require('mongoose')
 
@@ -70,46 +73,68 @@ const getReportWithImage = async (req, res) => {
 
 // create new report
 const createReport = async (req, res) => {
-    const { source, coordinates, edges, category, description } = req.body;
-    console.log(coordinates)
-    if (!req.file) {
-        return res.status(400).json({ error: "No image file was uploaded" })
-    }
+  const { source, coordinates, edges, category, description } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ error: "No image file was uploaded" });
+  }
 
-    if (!req.file.mimetype.startsWith("image/")) {
-        return res.status(400).json({ error: "Uploaded file is not a valid image" })
-    }
+  if (!req.file.mimetype.startsWith("image/")) {
+    return res.status(400).json({ error: "Uploaded file is not a valid image" });
+  }
 
-    if (req.file.size > 20 * 1024 * 1024) {
-        return res.status(400).json({ error: "Uploaded file exceeds the maximum size of 20 MB" });
-    }
+  if (req.file.size > 20 * 1024 * 1024) {
+    return res.status(400).json({ error: "Uploaded file exceeds the maximum size of 20 MB" });
+  }
 
-    const image = req.file.buffer
+  const image = req.file.buffer;
 
-    try {
-        let found = false
-        const user_id = req.user._id;
-        const parsedCoordinates = JSON.parse(coordinates);
-        const reports = await Report.find({ category: category })
-        for (const a of reports) {
-            const aCoords = a.coordinates
-            const distance = haversineDistance(parsedCoordinates.latitude, parsedCoordinates.longitude, aCoords.latitude, aCoords.longitude)
-            if (distance <= thresholdDistance && a.user_id != user_id) {
-                found = true;
-                const { expiry, counter } = a;
-                await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (30 * 60 * 1000), counter: counter + 1 });
+  try {
+    const safeSearchResponse = await axios.post(`https://vision.googleapis.com/v1/images:annotate?key=${process.env.SAFESEARCH_API}`, {
+      requests: [
+        {
+          image: {
+            content: image.toString('base64')
+          },
+          features: [
+            {
+              type: 'SAFE_SEARCH_DETECTION',
+              maxResults: 1
             }
+          ]
         }
-        if (found) {
-            const tempReport = { source, coordinates: parsedCoordinates, edges, category, description, image, user_id };
-            return res.status(200).json(tempReport)
-        }
-        const report = await Report.create({ source, coordinates: parsedCoordinates, edges, category, description, image, user_id });
-        
-        return res.status(200).json(report);
-    } catch (error) {
-       return res.status(400).json({ error: error.message });
+      ]
+    });
+
+    const safeSearchResult = safeSearchResponse.data.responses[0];
+    const safeSearchAnnotation = safeSearchResult.safeSearchAnnotation;
+
+    if (safeSearchAnnotation.adult === 'LIKELY' || safeSearchAnnotation.adult === 'VERY_LIKELY') {
+      return res.status(400).json({ error: "Uploaded image contains explicit content" });
     }
+
+    let found = false;
+    const user_id = req.user._id;
+    const parsedCoordinates = JSON.parse(coordinates);
+    const reports = await Report.find({ category: category });
+    for (const a of reports) {
+      const aCoords = a.coordinates;
+      const distance = haversineDistance(parsedCoordinates.latitude, parsedCoordinates.longitude, aCoords.latitude, aCoords.longitude);
+      if (distance <= thresholdDistance && !a.voter_ids.includes(user_id) && a.user_id != user_id) {
+        found = true;
+        const { expiry, counter } = a;
+        await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (30 * 60 * 1000), counter: counter + 1 });
+      }
+    }
+    if (found) {
+      const tempReport = { source, coordinates: parsedCoordinates, edges, category, description, image, user_id };
+      return res.status(200).json(tempReport);
+    }
+    const report = await Report.create({ source, coordinates: parsedCoordinates, edges, category, description, image, user_id });
+
+    return res.status(200).json(report);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 };
 
 // Add Expiry
