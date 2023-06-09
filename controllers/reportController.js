@@ -139,15 +139,25 @@ const createReport = async (req, res) => {
       if (distance <= thresholdDistance && !a.voter_ids.includes(user_id) && a.user_id != user_id) {
         found = true;
         const { expiry, counter } = a;
-        await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (30 * 60 * 1000), counter: counter + 1 });
+        await Report.findOneAndUpdate({ _id: a.id }, { expiry: expiry.getTime() + (5 * 60 * 1000), counter: counter + 1 });
       }
     }
     if (found) {
       const tempReport = { source, coordinates: parsedCoordinates, edges, category, description, image, user_id };
       return res.status(200).json(tempReport);
     }
-    const report = await Report.create({ source, coordinates: parsedCoordinates, edges, category, description, image, user_id });
+    let closureExpiry;
+    if (category === 'closure') {
+      closureExpiry = new Date(Date.now() + 86400000);
+    }
 
+    const reportData = { source, coordinates: parsedCoordinates, edges, category, description, image, user_id };
+
+    if (closureExpiry) {
+      reportData.expiry = closureExpiry;
+    }
+
+    const report = await Report.create(reportData);
     return res.status(200).json(report);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -175,7 +185,7 @@ const addExpiry = async (req, res) => {
     }
 
     // add 15 minutes to the expiry time
-    const newExpiry = new Date(report.expiry.getTime() + 30 * 60000)
+    const newExpiry = new Date(report.expiry.getTime() + 5 * 60000)
     
 
     report.expiry = newExpiry
@@ -207,7 +217,7 @@ const subtractExpiry = async (req, res) => {
     }
 
     // subtract 15 minutes from the expiry time
-    const newExpiry = new Date(report.expiry.getTime() - 30 * 60000)
+    const newExpiry = new Date(report.expiry.getTime() - 5 * 60000)
 
     report.expiry = newExpiry
 
