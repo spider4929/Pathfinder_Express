@@ -185,7 +185,7 @@ const addExpiry = async (req, res) => {
     }
 
     // add 15 minutes to the expiry time
-    const newExpiry = new Date(report.expiry.getTime() + 5 * 60000)
+    const newExpiry = new Date(report.expiry.getTime() + 15 * 60000)
     
 
     report.expiry = newExpiry
@@ -217,7 +217,7 @@ const subtractExpiry = async (req, res) => {
     }
 
     // subtract 15 minutes from the expiry time
-    const newExpiry = new Date(report.expiry.getTime() - 5 * 60000)
+    const newExpiry = new Date(report.expiry.getTime() - 15 * 60000)
 
     report.expiry = newExpiry
 
