@@ -37,10 +37,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
         console.log('A client connected.')
 
         socket.on('getReportData', ({ coordsData }) => {
-            // Call the getReport function to process the report data and emit it back to the client
-            const reportData = getReport({ body: { coordsData } })
-            socket.emit('reportData', reportData)
-        })
+            getReport(socket, { coordsData });
+        });
 
         socket.on('disconnect', () => {
             console.log('A client disconnected.')
