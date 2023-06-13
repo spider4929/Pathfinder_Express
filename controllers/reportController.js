@@ -236,4 +236,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { initializeSocketIO, getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
+module.exports = { getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
