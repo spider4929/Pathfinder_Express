@@ -4,6 +4,24 @@ const axios = require('axios');
 const Report = require('../models/reportModel')
 const mongoose = require('mongoose')
 
+// Socket.IO instance
+let io 
+
+// Initialize Socket.IO
+const initializeSocketIO = (server) => {
+  io = require('socket.io')(server)
+
+  // Handle Socket.IO events
+  io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id)
+
+    // Handle disconnection
+    socket.on('disconnect', () => {
+      console.log('Client disconnected:', socket.id)
+    })
+  })
+}
+
 const toRadians = (degrees) => {
       return degrees * Math.PI / 180
     }
@@ -235,4 +253,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
+module.exports = { initializeSocketIO, getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }

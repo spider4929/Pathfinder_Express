@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const preferenceRoutes = require('./routes/preferences')
 const userRoutes = require('./routes/user')
 const reportRoutes = require('./routes/report')
+const { initializeSocketIO } = require('./controllers/reportController')
 
 // express app
 const app = express()
@@ -25,9 +26,12 @@ app.use('/api/report', reportRoutes)
 // connect to db
 mongoose.connect(process.env.MONGO_URI).then(() => {
     // listen for requests
-    app.listen(process.env.PORT, ()  => {
+    const server = app.listen(process.env.PORT, ()  => {
         console.log('connected to db & listening on port', process.env.PORT)
     })
+
+    // Initialize Socket.IO
+    initializeSocketIO(server)
 }).catch((error) => {
     console.log(error)
 })
