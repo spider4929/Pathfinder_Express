@@ -41,7 +41,8 @@ const getReport = async (req, res) => {
             }
         }
     }
-
+    // Emit the report data to the client
+    socket.emit('reportData', response);
     res.status(200).json(response)
 }
 
@@ -235,4 +236,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
+module.exports = { initializeSocketIO, getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
