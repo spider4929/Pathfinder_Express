@@ -33,17 +33,17 @@ app.use('/api/report', reportRoutes)
 // connect to db
 mongoose.connect(process.env.MONGO_URI).then(() => {
     // Socket.IO event listener
-    io.on('connection', (socket) => {
-        console.log('A client connected.')
+    // io.on('connection', (socket) => {
+    //     console.log('A client connected.')
 
-        socket.on('getReportData', ({ coordsData }) => {
-            getReport(socket, { coordsData });
-        });
+    //     socket.on('getReportData', ({ coordsData }) => {
+    //         getReport(socket, { coordsData });
+    //     });
 
-        socket.on('disconnect', () => {
-            console.log('A client disconnected.')
-        })
-    })
+    //     socket.on('disconnect', () => {
+    //         console.log('A client disconnected.')
+    //     })
+    // })
     // listen for requests
     server.listen(process.env.PORT, ()  => {
         console.log('connected to db & listening on port', process.env.PORT)

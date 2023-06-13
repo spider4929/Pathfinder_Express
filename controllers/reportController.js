@@ -23,38 +23,17 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
 const thresholdDistance = 50
 
 // display report
-// const getReport = async (req, res) => {
-//     const { coordsData } = req.body;
-//     const response = []
-//     const reports = await Report.find()
-
-//     for (const coordinate of coordsData) {
-//         for (const a of reports) {
-//             const aCoords = a.coordinates 
-//             const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
-//             if (distance <= thresholdDistance) {
-//                 const { _id, source, coordinates, category, expiry } = a
-//                 const objToAdd = { _id, source, coordinates, category, expiry };
-//                 if (!response.some((obj) => obj._id === objToAdd._id)) {
-//                     response.push(objToAdd);
-//                 }
-//             }
-//         }
-//     }
-//     res.status(200).json(response)
-// }
-
-// display report
-const getReport = async (socket, { coordsData }) => {
-    const response = [];
-    const reports = await Report.find();
+const getReport = async (req, res) => {
+    const { coordsData } = req.body;
+    const response = []
+    const reports = await Report.find()
 
     for (const coordinate of coordsData) {
         for (const a of reports) {
-            const aCoords = a.coordinates;
-            const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude);
+            const aCoords = a.coordinates 
+            const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
             if (distance <= thresholdDistance) {
-                const { _id, source, coordinates, category, expiry } = a;
+                const { _id, source, coordinates, category, expiry } = a
                 const objToAdd = { _id, source, coordinates, category, expiry };
                 if (!response.some((obj) => obj._id === objToAdd._id)) {
                     response.push(objToAdd);
@@ -62,10 +41,31 @@ const getReport = async (socket, { coordsData }) => {
             }
         }
     }
+    res.status(200).json(response)
+}
 
-    // Emit the report data to the client
-    socket.emit('reportData', response);
-};
+// // display report
+// const getReport = async (socket, { coordsData }) => {
+//     const response = [];
+//     const reports = await Report.find();
+
+//     for (const coordinate of coordsData) {
+//         for (const a of reports) {
+//             const aCoords = a.coordinates;
+//             const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude);
+//             if (distance <= thresholdDistance) {
+//                 const { _id, source, coordinates, category, expiry } = a;
+//                 const objToAdd = { _id, source, coordinates, category, expiry };
+//                 if (!response.some((obj) => obj._id === objToAdd._id)) {
+//                     response.push(objToAdd);
+//                 }
+//             }
+//         }
+//     }
+
+//     // Emit the report data to the client
+//     socket.emit('reportData', response);
+// };
 
 // display report with image
 const getReportWithImage = async (req, res) => {
