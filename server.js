@@ -38,7 +38,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 
         socket.on('newReport', (reportData) => {
             // Handle the 'newReport' event
-            console.log('Received new report:', reportData.source);
+            console.log('Received new report');
         
             // Broadcast the report data to all connected clients
             io.emit('reportUpdate', reportData);
