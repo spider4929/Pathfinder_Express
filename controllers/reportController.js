@@ -44,29 +44,6 @@ const getReport = async (req, res) => {
     res.status(200).json(response)
 }
 
-// // display report
-// const getReport = async (socket, { coordsData }) => {
-//     const response = [];
-//     const reports = await Report.find();
-
-//     for (const coordinate of coordsData) {
-//         for (const a of reports) {
-//             const aCoords = a.coordinates;
-//             const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude);
-//             if (distance <= thresholdDistance) {
-//                 const { _id, source, coordinates, category, expiry } = a;
-//                 const objToAdd = { _id, source, coordinates, category, expiry };
-//                 if (!response.some((obj) => obj._id === objToAdd._id)) {
-//                     response.push(objToAdd);
-//                 }
-//             }
-//         }
-//     }
-
-//     // Emit the report data to the client
-//     socket.emit('reportData', response);
-// };
-
 // display report with image
 const getReportWithImage = async (req, res) => {
     const { coordsData } = req.body;
@@ -91,6 +68,27 @@ const getReportWithImage = async (req, res) => {
     }
 
     res.status(200).json(response)
+}
+
+// Check if one or more routes have a counter of 5 in road closure
+const roadClosureCheck = async (req, res) => {
+  const { coordsData } = req.body;
+  const reports = await Report.find()
+  const response = 'no'
+
+  for (const coordinate of coordsData) {
+    for (const a of reports) {
+      const aCoords = a.coordinates 
+      const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
+      if (distance <= thresholdDistance) {
+        const { counter } = a 
+        if (counter >= 5) {
+          response = 'yes'
+        }
+      }
+    }
+  }
+  res.status(200).json(response)
 }
 
 // create new report
@@ -257,4 +255,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { getReport, getReportWithImage, createReport, addExpiry, subtractExpiry }
+module.exports = { getReport, getReportWithImage, roadClosureCheck, createReport, addExpiry, subtractExpiry }
