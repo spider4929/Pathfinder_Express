@@ -44,6 +44,20 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
             io.emit('reportUpdate', reportData);
           });
 
+        socket.on('voteUpReport', (reportId) => {
+            //handle the 'voteUpReport' event
+            console.log('Upvoted report: ', reportId);
+
+            //Broadcast the upvoted report to connected clients
+            io.emit('reportCountUp', reportId);
+        })
+        socket.on('voteDownReport', (reportId) => {
+            //handle the 'voteDownReport' event
+            console.log('Downvoted report: ', reportId);
+
+            //Broadcast the downvoted report to connected clients
+            io.emit('reportCountDown', reportId);
+        })
         socket.on('disconnect', () => {
             console.log('A client disconnected.')
         })
