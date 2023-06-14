@@ -36,9 +36,13 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
     io.on('connection', (socket) => {
         console.log('A client connected.')
 
-        socket.on('getReportData', ({ coordsData }) => {
-            getReport(socket, { coordsData });
-        });
+        socket.on('newReport', (reportData) => {
+            // Handle the 'newReport' event
+            console.log('Received new report:', reportData.source);
+        
+            // Broadcast the report data to all connected clients
+            io.emit('reportUpdate', reportData);
+          });
 
         socket.on('disconnect', () => {
             console.log('A client disconnected.')
