@@ -74,7 +74,7 @@ const getReportWithImage = async (req, res) => {
 const roadClosureCheck = async (req, res) => {
   const { coordsData } = req.body;
   const reports = await Report.find()
-  const response = 'no'
+  const response = false
 
   for (const coordinate of coordsData) {
     for (const a of reports) {
@@ -83,7 +83,7 @@ const roadClosureCheck = async (req, res) => {
       if (distance <= thresholdDistance) {
         const { counter } = a 
         if (counter >= 5) {
-          response = 'yes'
+          response = true
         }
       }
     }
