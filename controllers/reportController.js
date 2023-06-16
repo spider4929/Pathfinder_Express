@@ -82,11 +82,33 @@ const roadClosureCheck = async (req, res) => {
       const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
       if (distance <= thresholdDistance) {
         const { counter } = a 
-        if (counter >= 5) {
+        if (counter >= 1) {
           response = true
         }
       }
     }
+  }
+  res.status(200).json(response)
+}
+
+// Check if created report closure is from user itself
+const roadClosureSelf = async (req, res) => {
+  const { id } = req.params 
+  const user_id = req.user._id
+  const response = false
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({error: 'No such report'})
+  }
+
+  const report = await Report.findById(id)
+
+  if (!report) {
+      return res.status(404).json({error: 'No such report'})
+  }
+
+  if (report.user_id == user_id) {
+    response = true
   }
   res.status(200).json(response)
 }
@@ -255,4 +277,4 @@ const subtractExpiry = async (req, res) => {
 
 
 
-module.exports = { getReport, getReportWithImage, roadClosureCheck, createReport, addExpiry, subtractExpiry }
+module.exports = { getReport, getReportWithImage, roadClosureCheck, roadClosureSelf, createReport, addExpiry, subtractExpiry }
