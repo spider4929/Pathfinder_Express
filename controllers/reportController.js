@@ -82,7 +82,7 @@ const roadClosureCheck = async (req, res) => {
       const distance = haversineDistance(coordinate.latitude, coordinate.longitude, aCoords.latitude, aCoords.longitude)
       if (distance <= thresholdDistance) {
         const { counter } = a 
-        if (counter >= 1) {
+        if (counter >= 5) {
           response = true
         }
       }
