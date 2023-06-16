@@ -74,7 +74,7 @@ const getReportWithImage = async (req, res) => {
 const roadClosureCheck = async (req, res) => {
   const { coordsData } = req.body;
   const reports = await Report.find()
-  const response = false
+  let response = false
 
   for (const coordinate of coordsData) {
     for (const a of reports) {
@@ -95,7 +95,7 @@ const roadClosureCheck = async (req, res) => {
 const roadClosureSelf = async (req, res) => {
   const { id } = req.params 
   const user_id = req.user._id
-  const response = false
+  let response = false
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({error: 'No such report'})
