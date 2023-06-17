@@ -94,6 +94,7 @@ const roadClosureCheck = async (req, res) => {
 // Check if created report closure is from user itself
 const roadClosureSelf = async (req, res) => {
   const { id } = req.params 
+  const { coordsData } = req.body
   const user_id = req.user._id
   let response = false
 
@@ -107,8 +108,15 @@ const roadClosureSelf = async (req, res) => {
       return res.status(404).json({error: 'No such report'})
   }
 
-  if (report.user_id == user_id) {
-    response = true
+  const reportCoords = report.coordinates
+  for (const coordinate of coordsData) {
+    const distance = haversineDistance(coordinate.latitude, coordinate.longitude, reportCoords.latitude, reportCoords.longitude)
+    if (distance <= thresholdDistance) {
+      if (report.user_id == user_id) {
+        response = true
+        break
+      }
+    }
   }
   res.status(200).json(response)
 }
