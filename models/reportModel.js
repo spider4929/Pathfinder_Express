@@ -49,7 +49,7 @@ const reportSchema = new Schema({
   },
   counter: {
     type: Number,
-    default: 1
+    default: 4
   }
 }, { timestamps: true });
 
