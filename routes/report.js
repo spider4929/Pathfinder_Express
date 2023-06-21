@@ -30,7 +30,7 @@ router.post('/filterwithimage', upload.none(), getReportWithImage)
 router.post('/check', roadClosureCheck)
 
 // GET a report based on self report road closure
-router.get('/self/:id', roadClosureSelf)
+router.post('/self/:id', roadClosureSelf)
 
 // PATCH a report by adding expiry
 router.patch('/add/:id', upload.none(), addExpiry)
