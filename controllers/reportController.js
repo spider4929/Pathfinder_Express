@@ -99,12 +99,14 @@ const roadClosureSelf = async (req, res) => {
   let response = false
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.log('!if mongoose.Types')
       return res.status(404).json({error: 'No such report'})
   }
 
   const report = await Report.findById(id)
 
   if (!report) {
+      console.log('!report')
       return res.status(404).json({error: 'No such report'})
   }
 
